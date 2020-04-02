@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.get('/', (req, res) => res.send('Working!!!'));
+// app.get('/', (req, res) => res.send('Working!!!'));
 
 app.use('/auth', authRoutes);
 app.use('/transaction', transactionRoutes);
