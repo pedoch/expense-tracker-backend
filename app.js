@@ -16,12 +16,16 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.get('/', (req, res) => res.send('Working!!!'));
+
 app.use('/auth', authRoutes);
 app.use('/transaction', transactionRoutes);
 
 mongoose
 	.connect('mongodb+srv://deltanboi:cf7P8lO8rF0lQM8h@cluster0-bjxhf.mongodb.net/expense-tracker')
 	.then((result) => {
-		app.listen(8000);
+		app.listen(process.env.PORT || 3000, function() {
+			console.log('server running on port 3000', '');
+		});
 	})
 	.catch((err) => console.log(err));
