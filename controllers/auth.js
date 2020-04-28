@@ -72,7 +72,9 @@ exports.login = (req, res, next) => {
 			res.status(200).json({
 				token: token,
 				user: {
-					...loadeduser,
+					email: loadeduser.email,
+					name: loadeduser.name,
+					transactions: loadeduser.transactions,
 				},
 			});
 		})
