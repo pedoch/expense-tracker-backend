@@ -75,6 +75,7 @@ exports.login = (req, res, next) => {
 					email: loadeduser.email,
 					name: loadeduser.name,
 					transactions: loadeduser.transactions,
+					_id: loadeduser._id,
 				},
 			});
 		})
