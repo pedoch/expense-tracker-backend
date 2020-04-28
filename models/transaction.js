@@ -5,17 +5,21 @@ const transactionSchema = new Schema(
 	{
 		amount: {
 			type: Number,
-			required: true
+			required: true,
 		},
 		userId: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
-			required: true
-		}
+			required: true,
+		},
+		text: {
+			type: String,
+			required: true,
+		},
 	},
 	{
-		timestamps: true
-	}
+		timestamps: true,
+	},
 );
 
 module.exports = mongoose.model('Transaction', transactionSchema);

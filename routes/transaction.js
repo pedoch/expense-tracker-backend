@@ -8,26 +8,27 @@ const transactionController = require('../controllers/transaction');
 
 const router = express.Router();
 
-router.get('/trasactions/:userId', isAuth, transactionController.getTransactions);
+router.get(
+	'/trasactions/:userId',
+	isAuth,
+	transactionController.getTransactions,
+);
 
 router.put(
 	'/create-transaction',
 	isAuth,
 	[
-		body('amount')
-			.not()
-			.isEmpty(),
-		body('userId')
-			.not()
-			.isEmpty()
+		body('amount').not().isEmpty(),
+		body('userId').not().isEmpty(),
+		body('text').not().isEmpty(),
 	],
-	transactionController.createTransaction
+	transactionController.createTransaction,
 );
 
 router.delete(
 	'/delete-transaction/:transactionId',
 	isAuth,
-	transactionController.deleteTransaction
+	transactionController.deleteTransaction,
 );
 
 module.exports = router;

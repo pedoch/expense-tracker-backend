@@ -5,7 +5,9 @@ const Transaction = require('../models/transaction');
 exports.getTransactions = (req, res, next) => {
 	Transaction.find({ userId: req.params.userId })
 		.then((transactions) => {
-			res.status(200).json({ message: 'Found transactions', transactions: transactions });
+			res
+				.status(200)
+				.json({ message: 'Found transactions', transactions: transactions });
 		})
 		.catch((err) => {
 			if (!err.statusCode) {
@@ -25,9 +27,11 @@ exports.createTransaction = (req, res, next) => {
 
 	const amount = req.body.amount;
 	const userId = req.body.userId;
+	const text = req.body.text;
 	const transaction = new Transaction({
 		amount: amount,
-		userId: userId
+		userId: userId,
+		text: text,
 	});
 
 	transaction
@@ -35,7 +39,7 @@ exports.createTransaction = (req, res, next) => {
 		.then((result) => {
 			res.status(201).json({
 				message: 'Transaction created succefully',
-				transaction: transaction
+				transaction: transaction,
 			});
 		})
 		.catch((err) => {

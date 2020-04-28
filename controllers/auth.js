@@ -21,14 +21,14 @@ exports.signup = (req, res, next) => {
 			const user = new User({
 				email: email,
 				password: hashedPassword,
-				name: name
+				name: name,
 			});
 
 			return user.save();
 		})
 		.then((result) => {
 			res.status(201).json({
-				message: 'User created'
+				message: 'User created',
 				// userId: {name: result.name, email: result.email, _id: result._id}
 			});
 		})
@@ -65,13 +65,15 @@ exports.login = (req, res, next) => {
 			const token = jwt.sign(
 				{
 					email: loadeduser.email,
-					userId: loadeduser._id.toString()
+					userId: loadeduser._id.toString(),
 				},
-				'howilikesmart15window@Fartingharper75#seventy'
+				'howilikesmart15window@Fartingharper75#seventy',
 			);
 			res.status(200).json({
 				token: token,
-				user: { name: loadeduser.name, email: loadeduser.email, _id: loadeduser._id.toString() }
+				user: {
+					...loadeduser,
+				},
 			});
 		})
 		.catch((err) => {
