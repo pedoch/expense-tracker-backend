@@ -51,10 +51,23 @@ exports.createTransaction = (req, res, next) => {
 					return user.save();
 				})
 				.then((result) => {
-					return res.status(201).json({
-						message: 'Transaction created succefully',
-						transactions: user.transactions,
-					});
+					return User.findById(userId)
+						.populate({
+							path: 'transactions',
+							populate: { path: 'transactions' },
+						})
+						.then((popUser) => {
+							return res.status(201).json({
+								message: 'Transaction created succefully',
+								transactions: popUser.transactions,
+							});
+						})
+						.catch((err) => {
+							if (!err.statusCode) {
+								err.statusCode = 500;
+							}
+							next(err);
+						});
 				})
 				.catch((err) => {
 					if (!err.statusCode) {
@@ -76,6 +89,10 @@ exports.deleteTransaction = (req, res, next) => {
 
 	let loadedUser;
 	User.findById(req.userId)
+		.populate({
+			path: 'transactions',
+			populate: { path: 'transactions' },
+		})
 		.then((user) => {
 			if (!user) {
 				const error = new Error('Could not find user.');
@@ -109,11 +126,22 @@ exports.deleteTransaction = (req, res, next) => {
 					return Transaction.findByIdAndRemove(transactionId);
 				})
 				.then((result) => {
-					res
-						.status(200)
-						.json({
-							message: 'transaction deleted.',
-							transactions: loadedUser.transactions,
+					return User.findById(userId)
+						.populate({
+							path: 'transactions',
+							populate: { path: 'transactions' },
+						})
+						.then((popUser) => {
+							return res.status(201).json({
+								message: 'Transaction deleted',
+								transactions: popUser.transactions,
+							});
+						})
+						.catch((err) => {
+							if (!err.statusCode) {
+								err.statusCode = 500;
+							}
+							next(err);
 						});
 				})
 				.catch((err) => {
