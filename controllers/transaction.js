@@ -1,21 +1,6 @@
 const { validationResult } = require('express-validator');
 
-const Transaction = require('../models/transaction');
-
-exports.getTransactions = (req, res, next) => {
-	Transaction.find({ userId: req.params.userId })
-		.then((transactions) => {
-			res
-				.status(200)
-				.json({ message: 'Found transactions', transactions: transactions });
-		})
-		.catch((err) => {
-			if (!err.statusCode) {
-				error.statusCode = 500;
-			}
-			next(err);
-		});
-};
+const User = require('../models/user');
 
 exports.createTransaction = (req, res, next) => {
 	const errors = validationResult(req);
@@ -25,46 +10,60 @@ exports.createTransaction = (req, res, next) => {
 		throw error;
 	}
 
-	const amount = req.body.amount;
-	const userId = req.body.userId;
-	const text = req.body.text;
-	const transaction = new Transaction({
-		amount: amount,
-		userId: userId,
-		text: text,
-	});
+	let loadedUser;
 
-	transaction
-		.save()
-		.then((result) => {
-			res.status(201).json({
+	User.findById(req.userId)
+		.then((user) => {
+			if (!user) {
+				const error = new Error('Could not find user.');
+				error.statusCode = 404;
+				throw error;
+			}
+
+			loadedUser = user;
+
+			const amount = req.body.amount;
+			const userId = req.userId;
+			const text = req.body.text;
+
+			const transaction = {
+				amount: amount,
+				userId: userId,
+				text: text,
+			};
+
+			loadedUser.transactions.push(transaction);
+			loadedUser.save();
+
+			return res.status(201).json({
 				message: 'Transaction created succefully',
 				transaction: transaction,
 			});
 		})
 		.catch((err) => {
-			if (!err.statusCode) {
-				error.statusCode = 500;
-			}
-			next(err);
+			const error = new Error('Could not create transaction');
+			error.statusCode = 500;
+			throw error;
 		});
 };
 
 exports.deleteTransaction = (req, res, next) => {
 	const transactionId = req.params.transactionId;
-	Transaction.findById(transactionId)
-		.then((transaction) => {
-			if (!transaction) {
-				const error = new Error('Could not find transaction.');
+	User.findById(req.userId)
+		.then((user) => {
+			if (!user) {
+				const error = new Error('Could not find user.');
 				error.statusCode = 404;
 				throw error;
 			}
-			if (transaction.userId.toString() !== req.userId) {
-				const error = new Error('Not Authorized');
-				error.statusCode = 403;
-				throw error;
-			}
-			return Transaction.findByIdAndRemove(transactionId);
+
+			let trans = user.transactions.filter((transaction) => {
+				if (transaction._id.toString() !== transactionId) return transaction;
+			});
+
+			user.transactions = trans;
+
+			return user.save();
 		})
 		.then((result) => {
 			res.status(200).json({ message: 'transaction deleted.' });
