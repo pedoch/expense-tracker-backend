@@ -32,7 +32,6 @@ exports.createTransaction = (req, res, next) => {
 
 	User.findById(userId)
 		.then((user) => {
-			console.log(user);
 			if (!user) {
 				const error = new Error('User not found');
 				error.statusCode = 422;
@@ -126,7 +125,7 @@ exports.deleteTransaction = (req, res, next) => {
 					return Transaction.findByIdAndRemove(transactionId);
 				})
 				.then((result) => {
-					return User.findById(userId)
+					return User.findById(req.userId)
 						.populate({
 							path: 'transactions',
 							populate: { path: 'transactions' },
@@ -146,14 +145,14 @@ exports.deleteTransaction = (req, res, next) => {
 				})
 				.catch((err) => {
 					if (!err.statusCode) {
-						error.statusCode = 500;
+						err.statusCode = 500;
 					}
 					next(err);
 				});
 		})
 		.catch((err) => {
 			if (!err.statusCode) {
-				error.statusCode = 500;
+				err.statusCode = 500;
 			}
 			next(err);
 		});
