@@ -47,7 +47,7 @@ exports.createTransaction = (req, res, next) => {
 			transaction
 				.save()
 				.then((result) => {
-					user.transactions.push(result._id);
+					user.transactions = [result._id, ...user.transactions];
 					return user.save();
 				})
 				.then((result) => {
