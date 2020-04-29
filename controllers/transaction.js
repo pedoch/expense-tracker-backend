@@ -53,7 +53,7 @@ exports.createTransaction = (req, res, next) => {
 				.then((result) => {
 					return res.status(201).json({
 						message: 'Transaction created succefully',
-						transaction: transaction,
+						transactions: user.transactions,
 					});
 				})
 				.catch((err) => {
@@ -109,7 +109,12 @@ exports.deleteTransaction = (req, res, next) => {
 					return Transaction.findByIdAndRemove(transactionId);
 				})
 				.then((result) => {
-					res.status(200).json({ message: 'transaction deleted.' });
+					res
+						.status(200)
+						.json({
+							message: 'transaction deleted.',
+							transactions: loadedUser.transactions,
+						});
 				})
 				.catch((err) => {
 					if (!err.statusCode) {
