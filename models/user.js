@@ -14,7 +14,12 @@ const userSchema = new Schema({
 		type: String,
 		required: true,
 	},
-	transactions: [],
+	transactions: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Transaction',
+		},
+	],
 });
 
 module.exports = mongoose.model('User', userSchema);

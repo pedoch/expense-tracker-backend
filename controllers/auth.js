@@ -46,6 +46,10 @@ exports.login = (req, res, next) => {
 	let loadeduser;
 
 	User.findOne({ email: email })
+		.populate({
+			path: 'transactions',
+			populate: { path: 'transactions' },
+		})
 		.then((user) => {
 			if (!user) {
 				const error = new Error('User does nnot exist');
